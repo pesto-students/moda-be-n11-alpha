@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
+const PORT = process.env.PORT || 2000;
+
 dotenv.config();
 
 app.use(cors());
@@ -19,6 +21,6 @@ mongoose
   .then(() => console.log("db  connection successful"))
   .catch((err) => console.log(err));
 
-app.listen(process.env.PORT || 2000, () =>
-  console.log(`...listening to port ${process.env.PORT}`)
+app.listen(PORT, () =>
+  console.log(`...listening to port ${process.env.PORT || 2000}`)
 );

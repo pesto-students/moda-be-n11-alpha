@@ -1,12 +1,13 @@
 const router = require("express").Router();
 const { getALlProducts, saveProduct } = require("../dao/productDao");
+
 router.get("/", async (req, res) => {
   const { limit, skip } = req.query;
   try {
     const products = await getALlProducts(parseInt(limit), parseInt(skip));
     return res.send(products);
   } catch (ex) {
-    res.statsu(500).send(ex.message);
+    res.status(500).send(ex.message);
   }
 });
 

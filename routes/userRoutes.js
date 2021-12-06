@@ -6,8 +6,8 @@ router.get("/", (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { username, email, password, isAdmin = false } = req.body;
-    const newuser = new User({ username, email, password, isAdmin });
+    const { username, email, password,  } = req.body;
+    const newuser = new User({ username, email, password});
     await newuser.save();
     return res.send();
   } catch (ex) {
