@@ -11,6 +11,10 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 
+app.use("/status", (req,res)=>{
+	return res.send("Server is running!!");
+});
+
 app.use("/api/v1/user", require("./routes/userRoutes"));
 app.use("/api/v1/cart", require("./routes/cartRoutes"));
 app.use("/api/v1/order", require("./routes/orderRoutes"));
