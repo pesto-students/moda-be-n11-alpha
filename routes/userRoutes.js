@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { createUser, findUser } = require("../dao/UserDao");
+const { createUser, findUser, loginUser } = require("../dao/UserDao");
 const { body, validationResult } = require("express-validator");
 
 const { sendEmail } = require("../utilities/email");
@@ -7,15 +7,17 @@ const { sendEmail } = require("../utilities/email");
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!(email && password))
+      return res.status(400).send("All input is required");
 
-    // Validate user input
-    if (!(email && password)) {
-      res.status(400).send("All input is required");
-    }
-
-    const oldUser = await findUser(email);
-    console.log(req.body, username, email, password);
-    return res.send();
+    const { token, saved_user } = await loginUser(email, password);
+    if (saved_user) {
+      res.cookie("jwt", token, {
+        expires: new Date(Date.now() + 3600),
+        httpOnly: true,
+      });
+      return res.send(saved_user);
+    } else return res.status(400).send("Invalid Credentials");
   } catch (ex) {
     res.status(500).send(ex.message);
   }
@@ -24,15 +26,21 @@ router.post("/", body("username").isEmail(), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      let { username, email, password } = req.body;
-      console.log(username, email, password);
+      let { username, email, password, address, phoneNumber } = req.body;
       const oldUser = await findUser(email);
       if (oldUser) {
         return res.status(409).send("User Already Exist. Please Login");
       }
-      const user = await createUser(username, email, password);
-      console.log("***user is found***", user);
+      const { token, user } = await createUser(
+        username,
+        email,
+        password,
+        address,
+        phoneNumber
+      );
+
       const saved_user = await user.save();
+      res.cookie("jwt", token);
       return res.send(saved_user);
     }
   } catch (ex) {

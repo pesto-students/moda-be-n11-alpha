@@ -33,17 +33,34 @@ const findUser = async (email) => {
     throw ex;
   }
 };
-const createUser = async (username, email, password) => {
+
+const loginUser = async (email, password) => {
+  const user = await User.findOne({ email });
+  if (user && (await bcrypt.compare(password, user.password))) {
+    // Create token
+    const token = jwt.sign(
+      { username: user.username, email },
+      process.env.TOKEN_SECRET
+    );
+    // save user token
+    user.token = token;
+    const saved_user = await user.save();
+    return { token, saved_user };
+  }
+  return { token: null, saved_user: null };
+};
+
+const createUser = async (username, email, password, address, phoneNumber) => {
   encryptedPassword = await bcrypt.hash(password, 10);
+  const token = jwt.sign({ username, email }, process.env.TOKEN_SECRET);
   const user = await new User({
     username,
+    address,
+    phoneNumber,
     email: email.toLowerCase(), // sanitize: convert email to lowercase
     password: encryptedPassword,
-    token: jwt.sign({ username, email }, process.env.TOKEN_SECRET, {
-      expiresIn: "2h",
-    }),
+    token: token,
   });
-  console.log(user);
-  return user;
+  return { token, user };
 };
-module.exports = { findUser, authenticateToken, createUser };
+module.exports = { findUser, authenticateToken, createUser, loginUser };

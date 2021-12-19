@@ -1,33 +1,31 @@
 const router = require("express").Router();
-const { getALlProducts, saveProduct } = require("../dao/productDao");
+const { getALlProducts, getOneProduct } = require("../dao/productDao");
 
-router.get("/", async (req, res) => {
-  const { limit, skip } = req.query;
+router.get("/:id", async (req, res) => {
   try {
-    const products = await getALlProducts(parseInt(limit), parseInt(skip));
-    return res.send(products);
+    const id = req.params.id;
+    const product = await getOneProduct(id);
+    res.send(product);
   } catch (ex) {
+    console.log(ex.message);
     res.status(500).send(ex.message);
   }
 });
 
-router.post("/", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const { ProductId, title, desc, img, categories, size, color, sex } =
-      req.body;
-    const savedProduct = await saveProduct({
-      ProductId,
-      title,
-      desc,
-      img,
-      categories,
-      size,
+    const { color, size, text, limit = 30, skip = 0 } = req.query;
+    const products = await getALlProducts(
+      parseInt(limit),
+      parseInt(skip),
       color,
-      sex,
-    });
-    return res.send(savedProduct);
+      size,
+      text
+    );
+    return res.send(products);
   } catch (ex) {
-    return res.status(500).send(ex.message);
+    console.log(ex.message);
+    res.status(500).send(ex.message);
   }
 });
 
