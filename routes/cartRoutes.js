@@ -66,4 +66,14 @@ router.patch("/", async (req, res) => {
     res.status(500).send(e.message);
   }
 });
+router.delete("/deleteAllProducts", async (req, res) => {
+  try {
+    let cart = await findCart(email);
+    cart.products = [];
+    await cart.save();
+    return res.send(`Products has been deleted from the cart`);
+  } catch (e) {
+    res.status(500).send(e.message);
+  }
+});
 module.exports = router;

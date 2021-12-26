@@ -1,21 +1,19 @@
 const sendGridMail = require("@sendgrid/mail");
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-function getMessage() {
-  const body = "This is a test email using SendGrid from Node.js";
+function getMessage(email, subject, body) {
   return {
-    to: "mrudit26@gmail.com",
+    to: email,
     from: "modaecomm21@gmail.com",
-    subject: "Test email with Node.js and SendGrid",
+    subject: subject,
     text: body,
     html: `<strong>${body}</strong>`,
   };
 }
 
-async function sendEmail() {
+async function sendEmail(email, subject, body) {
   try {
-    await sendGridMail.send(getMessage());
-    console.log("Test email sent successfully");
+    await sendGridMail.send(getMessage(email, subject, body));
   } catch (error) {
     console.error("Error sending test email");
     console.error(error);
