@@ -1,9 +1,16 @@
 const mongoose = require("mongoose");
 const cartSchema = mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    email: { unique: true, type: String },
     products: [
-      { productId: { type: String }, quantity: { type: Number, default: 1 } },
+      {
+        id: { type: String },
+        name: { type: String },
+        image: { type: String },
+        quantity: { type: Number, default: 1 },
+        color: { type: String },
+        size: { type: String },
+      },
     ],
   },
   {

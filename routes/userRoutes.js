@@ -1,15 +1,48 @@
 const router = require("express").Router();
-const User = require("../models/User");
-router.get("/", (req, res) => {
-  return res.send("userfound");
-});
+const { createUser, findUser, loginUser } = require("../dao/UserDao");
+const { body, validationResult } = require("express-validator");
 
-router.post("/", async (req, res) => {
+const { sendEmail } = require("../utilities/email");
+
+router.post("/login", async (req, res) => {
   try {
-    const { username, email, password, isAdmin = false } = req.body;
-    const newuser = new User({ username, email, password, isAdmin });
-    await newuser.save();
-    return res.send();
+    const { email, password } = req.body;
+    if (!(email && password))
+      return res.status(400).send("All input is required");
+
+    const { token, saved_user } = await loginUser(email, password);
+    if (saved_user) {
+      res.cookie("jwt", token, {
+        expires: new Date(Date.now() + 3600),
+        httpOnly: true,
+      });
+      return res.send(saved_user);
+    } else return res.status(400).send("Invalid Credentials");
+  } catch (ex) {
+    res.status(500).send(ex.message);
+  }
+});
+router.post("/", body("username").isEmail(), async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      let { username, email, password, address, phoneNumber } = req.body;
+      const oldUser = await findUser(email);
+      if (oldUser) {
+        return res.status(409).send("User Already Exist. Please Login");
+      }
+      const { token, user } = await createUser(
+        username,
+        email,
+        password,
+        address,
+        phoneNumber
+      );
+
+      const saved_user = await user.save();
+      res.cookie("jwt", token);
+      return res.send(saved_user);
+    }
   } catch (ex) {
     res.status(500).send(ex.message);
   }

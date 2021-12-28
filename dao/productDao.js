@@ -1,11 +1,53 @@
 const Product = require("../models/Product");
-
-async function getALlProducts(limit = 0, skip = 0, sort = "") {
+async function getOneProduct(id) {
   try {
-    const products = await Product.find().limit(limit).skip(skip);
-    console.log(products);
+    const product = await Product.findById(id);
+    return product;
+  } catch (ex) {
+    throw new Error(ex.message);
+  }
+}
+async function getALlProducts(
+  limit = 30,
+  skip = 0,
+  color = "",
+  size = "",
+  text = "",
+  gender = "",
+  page = 1
+) {
+  try {
+    let query;
+    if (color !== "") {
+      query = {};
+      query["color"] = { $in: [color] };
+    }
+    if (size !== "") {
+      query = query ? query : {};
+      query["size"] = { $in: [size] };
+    }
+    if (text !== "") {
+      query = query ? query : {};
+      query["name"] = { $regex: new RegExp(text, "i") };
+    }
+    if (gender !== "") {
+      query = query ? query : {};
+      query["gender"] = gender;
+    }
+    let products;
+    if (query)
+      products = await Product.find(query)
+        .limit(limit)
+        .skip(limit * (page - 1));
+    else
+      products = await Product.find()
+        .limit(limit)
+        .skip(limit * (page - 1));
     return products;
-  } catch (ex) {}
+  } catch (ex) {
+    console.log(ex.message);
+    throw ex;
+  }
 }
 
 async function saveProduct(product) {
@@ -27,6 +69,9 @@ async function saveManyProduct(products) {
       console.log(error); // Failure
     });
 }
-module.exports.saveProduct = saveProduct;
-module.exports.saveManyProduct = saveManyProduct;
-module.exports.getALlProducts = getALlProducts;
+module.exports = {
+  saveProduct,
+  saveManyProduct,
+  getALlProducts,
+  getOneProduct,
+};

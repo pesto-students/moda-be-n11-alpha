@@ -18,7 +18,13 @@ const homePageSchema = mongoose.Schema(
     PopularProduct: [
       {
         productId: String,
-        img: String,
+        name: { type: String, required: true },
+        description: { type: String, required: true },
+        images: { type: String, required: true },
+        brand: { type: String },
+        categories: { type: Array },
+        size: { type: Array },
+        color: { type: Array },
       },
     ],
   },
