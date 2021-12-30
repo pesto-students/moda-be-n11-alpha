@@ -3,7 +3,7 @@ const User = require("../models/User");
 const createOrder = async (email, products = [], totalAmount) => {
   try {
     const user = await User.findOne({ email });
-    console.log("the products are as follows", products);
+
     const orderedProducts = products.map(({ id, name, quantity }) => {
       return {
         productId: id,
@@ -21,7 +21,6 @@ const createOrder = async (email, products = [], totalAmount) => {
     await order.save();
     return order;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -31,7 +30,6 @@ const getAllOrderForUser = async (email) => {
     const orders = await Order.find({ email });
     return orders;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };

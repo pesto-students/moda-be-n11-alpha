@@ -23,8 +23,3 @@ async function sendEmail(email, subject, body) {
   }
 }
 module.exports.sendEmail = sendEmail;
-/* 
-(async () => {
-  console.log("Sending test email");
-  await sendEmail();
-})(); */

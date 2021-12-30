@@ -9,11 +9,14 @@ function generateAccessToken(username, password) {
 }
 
 const authenticateToken = async (token) => {
-  if (token == null) return false;
-  jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-    if (err) return false;
+  try {
+    if (token == null) return false;
+    let user = false;
+    user = await jwt.verify(token, process.env.TOKEN_SECRET);
     return user;
-  });
+  } catch (ex) {
+    return false;
+  }
 };
 
 const findUser = async (email) => {
@@ -30,7 +33,7 @@ const loginUser = async (email, password) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     // Create token
     const token = jwt.sign(
-      { username: user.username, email },
+      { username: user.username, email, password },
       process.env.TOKEN_SECRET
     );
     // save user token
@@ -54,4 +57,13 @@ const createUser = async (username, email, password, address, phoneNumber) => {
   });
   return { token, user };
 };
-module.exports = { findUser, authenticateToken, createUser, loginUser };
+
+const sendNewsletter = async (email) => {};
+
+module.exports = {
+  findUser,
+  authenticateToken,
+  createUser,
+  loginUser,
+  sendNewsletter,
+};

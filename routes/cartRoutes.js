@@ -1,11 +1,17 @@
 const router = require("express").Router();
+const jwt = require("jsonwebtoken");
 const { findCart, createCartForNewUser } = require("../dao/cartDao");
 
 router.get("/", async (req, res) => {
-  const { userId } = req.query;
-  const cart = await findCart(userId);
-  if (cart?.products?.length > 0) return res.send(cart.products);
-  else return res.send([]);
+  try {
+    const token = req.cookies.jwt;
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+    const cart = await findCart(decoded.email);
+    if (cart?.products?.length > 0) return res.send(cart.products);
+    else return res.send([]);
+  } catch (e) {
+    return res.status(400).send(e.message);
+  }
 });
 
 router.post("/", async (req, res) => {
