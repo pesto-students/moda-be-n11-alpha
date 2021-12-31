@@ -6,11 +6,12 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 const PORT = process.env.PORT || 2000;
+//"http://localhost:3000",
 
 dotenv.config();
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://moda-be.herokuapp.com"],
+    origin: "https://moda-be.herokuapp.com",
     credentials: true,
   })
 );
