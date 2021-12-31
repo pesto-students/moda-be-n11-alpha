@@ -31,6 +31,8 @@ router.post("/login", async (req, res) => {
       return res
         .cookie("jwt", token, {
           httpOnly: true,
+          sameSite: "none",
+          secure: true,
         })
         .send(saved_user);
     } else return res.status(400).send("Invalid Credentials");
@@ -60,6 +62,8 @@ router.post("/", body("username").isEmail(), async (req, res) => {
       return res
         .cookie("jwt", token, {
           httpOnly: true,
+          sameSite: "none",
+          secure: true,
         })
         .send(saved_user);
     }
