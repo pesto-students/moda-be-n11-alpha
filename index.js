@@ -10,7 +10,13 @@ const PORT = process.env.PORT || 2000;
 
 dotenv.config();
 app.use(
-  cors()
+  cors({
+    credentials: true,
+    origin: [
+      "http://localhost:3000",
+      "https://eager-swartz-44c197.netlify.app/",
+    ],
+  })
 );
 app.use(cookieParser());
 app.use(express.json());
