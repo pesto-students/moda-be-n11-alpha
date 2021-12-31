@@ -4,12 +4,16 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const bodyparser = require("body-parser");
 
 const PORT = process.env.PORT || 2000;
 
 dotenv.config();
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://moda-be.herokuapp.com"],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 
