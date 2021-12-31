@@ -12,10 +12,7 @@ dotenv.config();
 app.use(
   cors({
     credentials: true,
-    origin: [
-      "http://localhost:3000",
-      "https://eager-swartz-44c197.netlify.app/",
-    ],
+    origin:"https://eager-swartz-44c197.netlify.app/",
   })
 );
 app.use(cookieParser());
