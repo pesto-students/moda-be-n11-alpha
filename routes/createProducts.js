@@ -2,7 +2,6 @@ const router = require("express").Router();
 const data = require("../myntra_fashion_products_free_dataset.json");
 const Product = require("../models/Product");
 router.get("/", (req, res) => {
-  console.log(data.length);
   let unisex = [];
   data.forEach(async ({ name, description, images, brand, gender }, index) => {
     let product;

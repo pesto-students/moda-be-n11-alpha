@@ -18,16 +18,12 @@ router.patch("/", async (req, res, next) => {
     const homepageDetails = await getHomePageData();
     const products = await getALlProducts();
     let pr = products.slice(13, 19);
-    console.log(homepageDetails);
     return res.send({ homepageDetails, pr });
-  } catch (ex) {
-    console.log(ex);
-  }
+  } catch (ex) {}
 });
 
 router.post("/", async (req, res) => {
   try {
-    console.log(req.body);
     const { specialOffer, SaleAndOffer, PopularCategories } = req.body;
     const home = new Home({
       specialOffer,

@@ -8,22 +8,16 @@ function generateAccessToken(username, password) {
   });
 }
 
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-    console.log(err);
-
-    if (err) return res.sendStatus(403);
-
-    req.user = user;
-
-    next();
-  });
-}
+const authenticateToken = async (token) => {
+  try {
+    if (token == null) return false;
+    let user = false;
+    user = await jwt.verify(token, process.env.TOKEN_SECRET);
+    return user;
+  } catch (ex) {
+    return false;
+  }
+};
 
 const findUser = async (email) => {
   try {
@@ -39,7 +33,7 @@ const loginUser = async (email, password) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     // Create token
     const token = jwt.sign(
-      { username: user.username, email },
+      { username: user.username, email, password },
       process.env.TOKEN_SECRET
     );
     // save user token
@@ -63,4 +57,13 @@ const createUser = async (username, email, password, address, phoneNumber) => {
   });
   return { token, user };
 };
-module.exports = { findUser, authenticateToken, createUser, loginUser };
+
+const sendNewsletter = async (email) => {};
+
+module.exports = {
+  findUser,
+  authenticateToken,
+  createUser,
+  loginUser,
+  sendNewsletter,
+};

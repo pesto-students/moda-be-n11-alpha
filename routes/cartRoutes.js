@@ -1,11 +1,17 @@
 const router = require("express").Router();
+const jwt = require("jsonwebtoken");
 const { findCart, createCartForNewUser } = require("../dao/cartDao");
 
 router.get("/", async (req, res) => {
-  const { userId } = req.query;
-  const cart = await findCart(userId);
-  if (cart?.products?.length > 0) return res.send(cart.products);
-  else return res.send([]);
+  try {
+    const token = req.cookies.jwt;
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+    const cart = await findCart(decoded.email);
+    if (cart?.products?.length > 0) return res.send(cart.products);
+    else return res.send([]);
+  } catch (e) {
+    return res.status(400).send(e.message);
+  }
 });
 
 router.post("/", async (req, res) => {
@@ -62,6 +68,16 @@ router.patch("/", async (req, res) => {
       }
     }
     return res.send(`Product with ${id} is updated with quantity ${qty}`);
+  } catch (e) {
+    res.status(500).send(e.message);
+  }
+});
+router.delete("/deleteAllProducts", async (req, res) => {
+  try {
+    let cart = await findCart(email);
+    cart.products = [];
+    await cart.save();
+    return res.send(`Products has been deleted from the cart`);
   } catch (e) {
     res.status(500).send(e.message);
   }
