@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 2000;
 dotenv.config();
 app.use(
   cors({
+    origin:"https://moda-be.herokuapp.com/",
     credentials: true,
   })
 );
