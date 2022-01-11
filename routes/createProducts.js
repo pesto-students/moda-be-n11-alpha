@@ -1,19 +1,19 @@
-const router = require("express").Router();
-const data = require("../myntra_fashion_products_free_dataset.json");
-const Product = require("../models/Product");
-router.get("/", (req, res) => {
+const router = require('express').Router();
+const data = require('../myntra_fashion_products_free_dataset.json');
+const Product = require('../models/Product');
+router.get('/', (req, res) => {
   let unisex = [];
   data.forEach(async ({ name, description, images, brand, gender }, index) => {
     let product;
-    if (gender === "Men" || gender === "Women") {
+    if (gender === 'Men' || gender === 'Women') {
       if (index % 3 === 0) {
         product = new Product({
           name,
           description,
           images,
           brand,
-          size: ["sm", "l"],
-          color: ["yellow", "black", "white"],
+          size: ['sm', 'l', 'xxl'],
+          color: ['yellow', 'black', 'white'],
           gender,
         });
       } else if (index % 7 == 0) {
@@ -22,8 +22,8 @@ router.get("/", (req, res) => {
           description,
           images,
           brand,
-          size: ["sm", "l", "xl"],
-          color: ["red", "green", "blue", "yellow", "black", "white"],
+          size: ['sm', 'l', 'xl'],
+          color: ['red', 'green', 'blue', 'yellow', 'black', 'white'],
           gender,
         });
       } else {
@@ -32,8 +32,8 @@ router.get("/", (req, res) => {
           description,
           images,
           brand,
-          size: ["sm", "l", "xl", "xxl", "xxl"],
-          color: ["green", "blue", "yellow", "black"],
+          size: ['sm', 'l', 'xl', 'xxl', 'xxxl'],
+          color: ['green', 'blue', 'yellow', 'black'],
           gender,
         });
       }
@@ -41,6 +41,6 @@ router.get("/", (req, res) => {
     }
   });
 
-  return res.send("data is as follows");
+  return res.send('data is as follows');
 });
 module.exports = router;
