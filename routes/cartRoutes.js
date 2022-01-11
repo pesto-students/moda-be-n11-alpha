@@ -1,14 +1,23 @@
-const router = require("express").Router();
-const { findCart, createCartForNewUser } = require("../dao/cartDao");
+const router = require('express').Router();
+const jwt = require('jsonwebtoken');
+const { findCart, createCartForNewUser } = require('../dao/cartDao');
+const { GeneralError, ForbiddenError } = require('../utilities/error');
 
-router.get("/", async (req, res) => {
-  const { userId } = req.query;
-  const cart = await findCart(userId);
-  if (cart?.products?.length > 0) return res.send(cart.products);
-  else return res.send([]);
+router.get('/', async (req, res, next) => {
+  try {
+    if (req.jwtAuth) {
+      const cart = await findCart(req.email);
+      if (cart?.products?.length > 0) return res.send(cart.products);
+      else return res.send([]);
+    } else {
+      next(new ForbiddenError(e.message));
+    }
+  } catch (e) {
+    next(new GeneralError(e.message));
+  }
 });
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const { email, product } = req.body;
     let cart = await findCart(email);
@@ -20,11 +29,11 @@ router.post("/", async (req, res) => {
     }
     return res.send([]);
   } catch (e) {
-    return res.status(500).send(e.message);
+    next(new GeneralError(e.message));
   }
 });
 
-router.delete("/", async (req, res) => {
+router.delete('/', async (req, res, next) => {
   try {
     const { email, id, size, color, qty } = req.query;
     let cart = await findCart(email);
@@ -43,11 +52,11 @@ router.delete("/", async (req, res) => {
     await cart.save();
     return res.send(`Product with ${id} is deleted with quantity ${qty}`);
   } catch (e) {
-    res.status(500).send(e.message);
+    next(new GeneralError(e.message));
   }
 });
 
-router.patch("/", async (req, res) => {
+router.patch('/', async (req, res, next) => {
   try {
     const { email, id, size, color, qty } = req.body;
     let cart = await findCart(email);
@@ -63,17 +72,8 @@ router.patch("/", async (req, res) => {
     }
     return res.send(`Product with ${id} is updated with quantity ${qty}`);
   } catch (e) {
-    res.status(500).send(e.message);
+    next(new GeneralError(e.message));
   }
 });
-router.delete("/deleteAllProducts", async (req, res) => {
-  try {
-    let cart = await findCart(email);
-    cart.products = [];
-    await cart.save();
-    return res.send(`Products has been deleted from the cart`);
-  } catch (e) {
-    res.status(500).send(e.message);
-  }
-});
+
 module.exports = router;

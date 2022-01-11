@@ -1,33 +1,30 @@
-const router = require("express").Router();
-const Home = require("../models/Home");
-const { getHomePageData } = require("../dao/homeDao");
-const { getALlProducts } = require("../dao/productDao");
-
-router.get("/", async (_, res) => {
+const router = require('express').Router();
+const Home = require('../models/Home');
+const { getHomePageData } = require('../dao/homeDao');
+const { getALlProducts } = require('../dao/productDao');
+const { GeneralError } = require('../utilities/error');
+router.get('/', async (_, res, next) => {
   try {
     const homepageDetails = await getHomePageData();
-
     return res.send(homepageDetails);
-  } catch (err) {
-    res.status(500).send(ex.message);
+  } catch (e) {
+    next(new GeneralError(e.message));
   }
 });
 
-router.patch("/", async (req, res, next) => {
+router.patch('/', async (_, res, next) => {
   try {
     const homepageDetails = await getHomePageData();
     const products = await getALlProducts();
     let pr = products.slice(13, 19);
-    console.log(homepageDetails);
     return res.send({ homepageDetails, pr });
   } catch (ex) {
-    console.log(ex);
+    next(new GeneralError(e.message));
   }
 });
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
-    console.log(req.body);
     const { specialOffer, SaleAndOffer, PopularCategories } = req.body;
     const home = new Home({
       specialOffer,
@@ -37,7 +34,7 @@ router.post("/", async (req, res) => {
     const savedHome = await home.save();
     return res.send(savedHome);
   } catch (ex) {
-    res.status(500).send(ex.message);
+    next(new GeneralError(e.message));
   }
 });
 

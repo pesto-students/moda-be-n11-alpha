@@ -45,7 +45,6 @@ async function getALlProducts(
         .skip(limit * (page - 1));
     return products;
   } catch (ex) {
-    console.log(ex.message);
     throw ex;
   }
 }
@@ -54,20 +53,14 @@ async function saveProduct(product) {
   try {
     const newproduct = new Product(product);
     const savedProduct = await newproduct.save();
-    console.log(savedProduct);
+
     return savedProduct;
-  } catch (ex) {
-    console.log(ex.message);
-  }
+  } catch (ex) {}
 }
 async function saveManyProduct(products) {
   Product.insertMany(products)
-    .then(function () {
-      console.log("Data inserted"); // Success
-    })
-    .catch(function (error) {
-      console.log(error); // Failure
-    });
+    .then(function () {})
+    .catch(function (error) {});
 }
 module.exports = {
   saveProduct,

@@ -1,13 +1,17 @@
-const router = require("express").Router();
-const { getAllOrderForUser } = require("../dao/orderDao");
+const router = require('express').Router();
+const { getAllOrderForUser } = require('../dao/orderDao');
+const { GeneralError, ForbiddenError } = require('../utilities/error');
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
-    const { email } = req.query;
-    const orders = await getAllOrderForUser(email);
-    return res.send(orders);
+    if (req.jwtAuth) {
+      const orders = await getAllOrderForUser(req.email);
+      return res.send(orders);
+    } else {
+      next(new ForbiddenError('jwt token not found'));
+    }
   } catch (e) {
-    return res.send(e.message);
+    next(new GeneralError(e.message));
   }
 });
 
